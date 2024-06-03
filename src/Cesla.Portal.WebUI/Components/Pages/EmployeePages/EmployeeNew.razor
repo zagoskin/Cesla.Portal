@@ -1,0 +1,47 @@
+﻿@page "/employees/create"
+
+@using Cesla.Portal.Application.Employees.Commands.CreateEmployee
+@using Cesla.Portal.WebUI.Components.Layout.EmployeesLayouts
+
+@inject ISender Sender
+@inject NavigationManager NavigationManager
+
+<PageTitle>New Employee</PageTitle>
+
+<h1 class="mb-4">
+  <Tooltip Text="Back">
+    <NavLink class="btn btn-primary" href="employees">
+      <i class="fa-solid fa-reply-all"></i>
+    </NavLink>
+  </Tooltip>
+  New Employee
+</h1>
+
+@if (_errorMessage is not null)
+{
+  <Alert ErrorMessage="@_errorMessage" OnAlertClosed="() => _errorMessage = null" />
+}
+
+<EmployeeForm OnFormSubmitted="(args) => CreateEmployeeAsync(args.Employee)" />
+
+@code {
+  private string? _errorMessage;
+
+  private async Task CreateEmployeeAsync(EmployeeFormModel employeeFormModel)
+  {
+    var command = new CreateEmployeeCommand(
+        employeeFormModel.FirstName,
+        employeeFormModel.LastName,
+        employeeFormModel.DateOfBirth.ToDateTime(TimeOnly.MinValue),
+        employeeFormModel.EmailAddress,
+        employeeFormModel.JobTitle,
+        employeeFormModel.Department);
+    var result = await Sender.Send(command);
+    if (result.IsError)
+    {
+      _errorMessage = result.GetErrorOrDefault();
+      return;
+    }
+    NavigationManager.NavigateTo("employees");
+  }
+}

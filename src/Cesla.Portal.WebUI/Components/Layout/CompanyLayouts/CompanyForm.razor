@@ -1,0 +1,91 @@
+﻿@using Cesla.Portal.WebUI.Models
+<div class="w-75 border rounded-2 shadow p-3">
+  <EditForm Model="Company" OnValidSubmit="OnCompanyFormSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-1 row">
+      <div class="col-md-6">
+        <label for="CompanyName" class="form-label fw-semibold">Company name</label>
+        <InputText id="CompanyName" class="form-control" @bind-Value="@Company.CompanyName" />
+      </div>
+      <div class="col-md-6">
+        <label for="FantasyName" class="form-label fw-semibold">Fantasy name</label>
+        <InputText id="FantasyName" class="form-control" @bind-Value="Company.FantasyName" />
+      </div>
+    </div>
+    <hr />
+    <div class="mb-1 row">
+      <div class="col-md-4">
+        <label for="Cnpj" class="form-label fw-semibold">Cnpj</label>
+        <InputText id="Cnpj" class="form-control" @bind-Value="Company.Cnpj" />
+      </div>
+      <div class="col-md-4">
+        <label for="EmailAddress" class="form-label fw-semibold">Email address</label>
+        <div class="input-group">
+          <span class="input-group-text" id="basic-addon1">@@</span>
+          <InputText id="EmailAddress" type="email" class="form-control" placeholder="Email address" @bind-Value="Company.EmailAddress" />
+        </div>
+      </div>
+      <div class="col-md-4">
+        <label for="PhoneNumber" class="form-label fw-semibold">Phone number</label>
+        <div class="input-group">
+          <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-phone"></i></span>
+          <InputText id="PhoneNumber" class="form-control" placeholder="Phone number" @bind-Value="Company.PhoneNumber" />
+        </div>
+      </div>
+    </div>
+    <hr />
+
+    <div class="mb-4 row">
+      <div class="col-md-12">
+        <label for="AddressLine" class="form-label fw-semibold">Address line</label>
+        <div class="input-group">
+          <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-location-dot"></i></span>
+          <InputText id="AddressLine" class="form-control" placeholder="Address line" @bind-Value="Company.AddressLine" />
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <label for="City" class="form-label fw-semibold">City</label>
+        <InputText id="City" class="form-control" @bind-Value="Company.City" />
+      </div>
+      <div class="col-md-4">
+        <label for="State" class="form-label fw-semibold">State</label>
+        <InputText id="State" class="form-control" @bind-Value="Company.State" />
+      </div>
+      <div class="col-md-4">
+        <label for="Country" class="form-label fw-semibold">Country</label>
+        <InputText id="Country" class="form-control" @bind-Value="Company.Country" />
+      </div>
+    </div>
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary" style="width: 80px">Save</button>
+    </div>
+  </EditForm>
+</div>
+
+
+@code {
+  [Parameter, EditorRequired]
+  public CompanyFormModel Company { get; init; } = new();
+
+  [Parameter, EditorRequired]
+  public EventCallback<CompanyFormSubmittedEventArgs> OnFormSubmitted { get; init; }
+
+  public class CompanyFormSubmittedEventArgs
+  {
+    public CompanyFormModel Company { get; init; }
+
+    public CompanyFormSubmittedEventArgs(CompanyFormModel company)
+    {
+      Company = company;
+    }
+  }
+
+  private async Task OnCompanyFormSubmit()
+  {
+    await OnFormSubmitted.InvokeAsync(new CompanyFormSubmittedEventArgs(Company));
+  }
+}

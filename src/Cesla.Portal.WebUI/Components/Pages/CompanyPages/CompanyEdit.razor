@@ -1,0 +1,88 @@
+﻿@using Cesla.Portal.Application.Companies.Commands.UpdateCompany
+@using Cesla.Portal.Application.Companies.Queries.GetCompany
+@using Cesla.Portal.Application.Dtos
+@using Cesla.Portal.WebUI.Components.Layout
+@using Cesla.Portal.WebUI.Components.Layout.CompanyLayouts
+@using Cesla.Portal.WebUI.Extensions
+@using Cesla.Portal.WebUI.Models
+@using MediatR
+@inject ISender Sender
+@inject NavigationManager NavigationManager
+@page "/company/edit"
+
+<PageTitle>Edit Company</PageTitle>
+
+<h1 class="mb-4">
+  <Tooltip Text="Back">
+    <NavLink class="btn btn-primary" href="company">
+      <i class="fa-solid fa-reply-all"></i>
+    </NavLink>
+  </Tooltip>
+  Edit Company
+</h1>
+
+@if (_errorMessage is not null)
+{
+  <Alert ErrorMessage="@_errorMessage" OnAlertClosed="() => _errorMessage = null" />
+}
+
+@if (_companyForm is null)
+{
+  <p><em>Loading...</em></p>
+}
+else
+{
+  <CompanyForm Company="@_companyForm" OnFormSubmitted="(args) => UpdateCompany(args.Company)" />
+}
+
+@code {
+  private CompanyFormModel? _companyForm;
+  private string? _errorMessage = null;
+
+  protected override async Task OnInitializedAsync()
+  {
+    var query = new GetCompanyQuery();
+    var getCompanyResult = await Sender.Send(query);
+    if (getCompanyResult.IsError)
+    {
+      _errorMessage = getCompanyResult.GetErrorOrDefault();
+      return;
+    }
+
+    _companyForm = new CompanyFormModel
+      {
+        CompanyName = getCompanyResult.Value.CompanyName,
+        FantasyName = getCompanyResult.Value.FantasyName,
+        Cnpj = getCompanyResult.Value.Cnpj,
+        PhoneNumber = getCompanyResult.Value.PhoneNumber,
+        EmailAddress = getCompanyResult.Value.EmailAddress,
+        AddressLine = getCompanyResult.Value.AddressLine,
+        City = getCompanyResult.Value.City,
+        State = getCompanyResult.Value.State,
+        Country = getCompanyResult.Value.Country
+      };
+  }
+
+  private async Task UpdateCompany(CompanyFormModel companyForm)
+  {
+    var command = new UpdateCompanyCommand(
+      companyForm.CompanyName,
+      companyForm.FantasyName,
+      companyForm.Cnpj,
+      companyForm.PhoneNumber,
+      companyForm.EmailAddress,
+      companyForm.AddressLine,
+      companyForm.City,
+      companyForm.State,
+      companyForm.Country);
+
+    var result = await Sender.Send(command);
+    if (result.IsError)
+    {
+      _errorMessage = result.GetErrorOrDefault();
+      return;
+    }
+
+    NavigationManager.NavigateTo("company");
+  }
+}

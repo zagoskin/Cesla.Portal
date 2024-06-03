@@ -1,0 +1,22 @@
+﻿<div class="tooltip-wrapper">
+  @if (!string.IsNullOrWhiteSpace(InnerTextStyleOverride))
+  {
+    <span style="@InnerTextStyleOverride">@Text</span>
+  }
+  else
+  {
+    <span>@Text</span>
+  }
+  @ChildContent
+</div>
+
+@code {
+  [Parameter, EditorRequired] 
+  public RenderFragment ChildContent { get; set; } = default!;
+
+  [Parameter]
+  public string? InnerTextStyleOverride { get; set; }
+
+  [Parameter, EditorRequired]
+  public string Text { get; set; } = string.Empty;
+}

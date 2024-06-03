@@ -1,0 +1,51 @@
+﻿@page "/company"
+@using Cesla.Portal.Application.Companies.Queries.GetCompany
+@using Cesla.Portal.WebUI.Components.Layout.CompanyLayouts
+@using MediatR
+@rendermode InteractiveServer
+@inject ISender Sender;
+
+<PageTitle>Company Information</PageTitle>
+
+<h1 class="mb-4">
+  <Tooltip Text="Edit">
+    <NavLink class="btn btn-primary" href="company/edit">
+      <i class="fa-solid fa-pen-to-square"></i>
+    </NavLink>
+  </Tooltip>
+  Company Information
+</h1>
+
+@if (_errorMessage is not null)
+{
+  <Alert ErrorMessage="@_errorMessage" OnAlertClosed="() => _errorMessage = null" />
+}
+
+@if (!_isLoaded)
+{
+  <p><em>Loading...</em></p>
+}
+else if (_companyDto is not null)
+{
+  <CompanyDetailsCard Company="_companyDto" />
+}
+@code {
+  private CompanyDto? _companyDto;
+  private bool _isLoaded = false;
+  private string? _errorMessage = null;
+
+  protected override async Task OnInitializedAsync()
+  {
+    var query = new GetCompanyQuery();
+    var getCompanyResult = await Sender.Send(query);
+    if (getCompanyResult.IsError)
+    {
+      _errorMessage = getCompanyResult.GetErrorOrDefault();
+    }
+    else
+    {
+      _companyDto = getCompanyResult.Value;
+    }
+    _isLoaded = true;
+  }
+}

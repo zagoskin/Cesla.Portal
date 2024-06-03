@@ -1,0 +1,49 @@
+﻿<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Date of birth</th>
+      <th scope="col">Email address</th>
+      <th scope="col">Department</th>
+      <th scope="col">Job title</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var employee in Employees)
+    {
+      var link = $"employees/{employee.Id}/edit";
+      <tr style="vertical-align: middle">
+        <td data-testid="@employee.EmailAddress-fullname">@employee.FirstName @employee.LastName</td>
+        <td data-testid="@employee.EmailAddress-dob">@employee.DateOfBirth.ToString("yyyy/MM/dd")</td>
+        <td data-testid="@employee.EmailAddress-email">@employee.EmailAddress</td>
+        <td data-testid="@employee.EmailAddress-department">@employee.Department</td>
+        <td data-testid="@employee.EmailAddress-job">@employee.JobTitle</td>
+        <td>
+          <Tooltip Text="Edit" InnerTextStyleOverride="margin-bottom: 20%;">
+            <NavLink class="btn btn-primary" href="@link">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </NavLink>
+          </Tooltip>
+          <Tooltip Text="Delete" InnerTextStyleOverride="margin-bottom: 20%; margin-left: -20%;">
+            <button data-testid="@employee.EmailAddress-delete" class="btn btn-danger" @onclick="() => DeleteEmployeeAsync(employee.Id)">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </Tooltip>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+@code {
+  [Parameter, EditorRequired]
+  public List<EmployeeDto> Employees { get; set; } = [];
+
+  [Parameter, EditorRequired]
+  public EventCallback<string> OnDeletedEmployee { get; set; }
+
+  private async Task DeleteEmployeeAsync(string employeeId)
+  {
+    await OnDeletedEmployee.InvokeAsync(employeeId);
+  }
+}

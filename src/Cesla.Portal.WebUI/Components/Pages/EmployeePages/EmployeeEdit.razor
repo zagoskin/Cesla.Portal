@@ -1,0 +1,80 @@
+﻿@page "/employees/{employeeId:guid}/edit"
+
+@using Cesla.Portal.Application.Employees.Commands.CreateEmployee
+@using Cesla.Portal.Application.Employees.Commands.UpdateEmployee
+@using Cesla.Portal.Application.Employees.Queries.GetEmployee
+@using Cesla.Portal.WebUI.Components.Layout.EmployeesLayouts
+
+@inject ISender Sender
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit Employee</PageTitle>
+
+<h1 class="mb-4">
+  <Tooltip Text="Back">
+    <NavLink class="btn btn-primary" href="employees">
+      <i class="fa-solid fa-reply-all"></i>
+    </NavLink>
+  </Tooltip>
+  Edit Employee
+</h1>
+
+@if (_errorMessage is not null)
+{
+  <Alert ErrorMessage="@_errorMessage" OnAlertClosed="() => _errorMessage = null" />
+}
+
+@if (_employee is not null)
+{
+  <EmployeeForm Employee="@_employee" OnFormSubmitted="(args) => UpdateEmployeeAsync(args.Employee)" />
+}
+
+
+@code {
+  [Parameter, EditorRequired]
+  public Guid EmployeeId { get; set; }
+
+  private string? _errorMessage;
+  private EmployeeFormModel? _employee;
+
+  protected override async Task OnInitializedAsync()
+  {
+    var query = new GetEmployeeByIdQuery(EmployeeId.ToString());
+    var result = await Sender.Send(query);
+    if (result.IsError)
+    {
+      _errorMessage = result.GetErrorOrDefault();
+      return;
+    }
+
+    _employee = new EmployeeFormModel
+      {
+        FirstName = result.Value.FirstName,
+        LastName = result.Value.LastName,
+        EmailAddress = result.Value.EmailAddress,
+        DateOfBirth = DateOnly.FromDateTime(result.Value.DateOfBirth),
+        JobTitle = result.Value.JobTitle,
+        Department = result.Value.Department
+      };
+  }
+
+  private async Task UpdateEmployeeAsync(EmployeeFormModel employeeFormModel)
+  {
+    var command = new UpdateEmployeeCommand(
+        EmployeeId.ToString(),
+        employeeFormModel.FirstName,
+        employeeFormModel.LastName,
+        employeeFormModel.EmailAddress,
+        employeeFormModel.DateOfBirth.ToDateTime(TimeOnly.MinValue),
+        employeeFormModel.JobTitle,
+        employeeFormModel.Department);
+
+    var result = await Sender.Send(command);
+    if (result.IsError)
+    {
+      _errorMessage = result.GetErrorOrDefault();
+      return;
+    }
+    NavigationManager.NavigateTo("employees");
+  }
+}

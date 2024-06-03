@@ -1,0 +1,63 @@
+﻿@page "/employees"
+@using Cesla.Portal.Application.Employees.Commands.DeleteEmployee
+@using Cesla.Portal.Application.Employees.Queries.ListEmployees
+@using Cesla.Portal.WebUI.Components.Layout.EmployeesLayouts
+
+@inject ISender Sender
+
+<PageTitle>Employees</PageTitle>
+
+<h1 class="mb-5">
+  <Tooltip Text="Create" InnerTextStyleOverride="margin-left: -20%;">
+    <NavLink class="btn btn-primary" href="employees/create">
+      <i class="fa-solid fa-plus"></i>
+    </NavLink>
+  </Tooltip>
+  Employees
+</h1>
+
+@if (_employees == null)
+{
+  <p><em>Loading...</em></p>
+}
+else
+{
+  <div class="border rounded-2 p-3" style="max-width: 95%">
+    <EmployeesTable Employees="@_employees" OnDeletedEmployee="(employeeId) => DeleteEmployeeAsync(employeeId)" />
+  </div>
+}
+
+@code {
+  private List<EmployeeDto>? _employees;
+  private string? _errorMessage;
+
+  protected override async Task OnInitializedAsync()
+  {
+    var query = new ListEmployeesQuery();
+    var result = await Sender.Send(query);
+    if (result.IsError)
+    {
+      _errorMessage = result.GetErrorOrDefault();
+      _employees = [];
+      return;
+    }
+
+    _employees = result.Value.OrderBy(e => e.FirstName).ToList();
+  }
+
+  private async Task DeleteEmployeeAsync(string employeeId)
+  {
+    var command = new DeleteEmployeeCommand(employeeId);
+    var result = await Sender.Send(command);
+    if (result.IsError)
+    {
+      _errorMessage = result.GetErrorOrDefault();
+      return;
+    }
+
+    _employees = _employees?
+        .Where(e => e.Id != employeeId)
+        .OrderBy(e => e.FirstName)
+        .ToList() ?? [];
+  }
+}

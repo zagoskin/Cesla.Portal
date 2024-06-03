@@ -1,0 +1,44 @@
+volumes:
+  cesla-volume:
+
+services:      
+
+  webapp:
+    build:
+      context: .
+    image: cesla/portal
+    restart: always
+    container_name: ceslaportal
+    ports:
+      - 1234:8080
+      - 1235:8081
+    depends_on:
+      cesla_mysql:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - CeslaPortal_ConnectionStrings__Cesla=server=cesla_mysql;database=cesla;user=ceslaadmin;password=C35l4!4dm1n; 
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=C35l41234!
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/cert.pfx  
+
+  cesla_mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'cesla'
+      MYSQL_USER: 'ceslaadmin'
+      MYSQL_PASSWORD: 'C35l4!4dm1n'
+      MYSQL_ROOT_PASSWORD: 'C35l4!4dm1n'
+    healthcheck:
+      test: "/usr/bin/mysql --user=ceslaadmin --password=C35l4!4dm1n --execute \"SHOW DATABASES;\""
+      start_period: 5s
+      interval: 3s
+      timeout: 5s
+      retries: 55
+    ports:
+      - 3306:3306
+    expose:
+      - '3306'
+    volumes:
+      - cesla-volume:/var/lib/mysql
+  

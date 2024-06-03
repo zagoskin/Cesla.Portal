@@ -1,0 +1,31 @@
+﻿<div class="w-75 alert @AlertTypeCssClass alert-dismissible fade show" role="alert" data-testid="error-alert">
+  @ErrorMessage
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" @onclick="OnAlertClosed"></button>
+</div>
+@code {
+    [Parameter, EditorRequired]
+    public string ErrorMessage { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public EventCallback OnAlertClosed { get; set; }
+ 
+    [Parameter]
+    public AlertType Type { get; set; } = AlertType.Danger;
+
+    private string AlertTypeCssClass => Type switch
+    {
+        AlertType.Success => "alert-success",
+        AlertType.Info => "alert-info",
+        AlertType.Warning => "alert-warning",
+        AlertType.Danger => "alert-danger",
+        _ => "alert-danger"
+    };
+
+    public enum AlertType
+    {
+        Success,
+        Info,
+        Warning,
+        Danger
+    }
+}

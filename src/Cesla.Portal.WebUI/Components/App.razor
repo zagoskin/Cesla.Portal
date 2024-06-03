@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <base href="/" />
+  <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+  <link rel="stylesheet" href="bootstrap/bootstrap-grid.min.css" />
+  <link rel="stylesheet" href="bootstrap/bootstrap-utilities.min.css" />
+  <link rel="stylesheet" href="app.css" />
+  <link rel="stylesheet" href="Cesla.Portal.WebUI.styles.css" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="font-awesome/css/fontawesome.min.css" />
+  <script src="font-awesome/js/all.min.js"></script>
+  @* <script src="https://kit.fontawesome.com/a7376b527d.js" crossorigin="anonymous"></script> *@
+  <HeadOutlet />
+</head>
+
+<body>
+  <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
+  <script src="_framework/blazor.web.js"></script>
+  
+</body>
+
+</html>

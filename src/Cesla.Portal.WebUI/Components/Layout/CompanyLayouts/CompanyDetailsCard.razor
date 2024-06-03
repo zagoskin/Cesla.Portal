@@ -1,0 +1,53 @@
+﻿@using Cesla.Portal.Application.Dtos
+<div class="card shadow" style="width: 60%">
+  <div class="card-body">
+    <h3 class="card-title" data-testid="company-name">@Company.CompanyName</h3>
+    <h6 class="card-subtitle mt-1 mb-2 text-muted" data-testid="company-fantasy">@Company.FantasyName</h6>
+    <h6 class="card-subtitle mb-3 text-muted" data-testid="company-identifier">@Company.Cnpj</h6>
+    <hr />
+    <div class="card-subtitle mb-3">
+      <div class="d-inline-block mx-auto" style="width: 3%">
+        <div class="w-100 d-flex justify-content-center">
+          <i class="fa-solid fa-location-dot"></i>
+        </div>
+      </div>
+      <div class="d-inline-block mx-auto" data-testid="company-addressline">
+        <a href="https://www.google.com/maps/search/@Company.AddressLine, @Company.City, @Company.State, @Company.Country"
+           target="_blank"
+           style="text-decoration: none" >
+          @Company.AddressLine, @Company.City, @Company.State, @Company.Country
+        </a>
+      </div>
+    </div>
+    <div class="card-subtitle mb-3">
+      <div class="d-inline-block mx-auto" style="width: 3%">
+        <div class="w-100 d-flex justify-content-center">
+          <i class="fa-solid fa-envelope"></i>
+        </div>
+      </div>
+      <div class="d-inline-block mx-auto" data-testid="company-email">
+        <a href="mailto:@Company.EmailAddress?subject=Job Opportunity"
+           target="_blank"
+           style="text-decoration: none">
+          @Company.EmailAddress
+        </a>
+      </div>
+    </div>
+    <div class="card-subtitle mb-3">
+      <div class="d-inline-block mx-auto" style="width: 3%">
+        <div class="w-100 d-flex justify-content-center">
+          <i class="fa-solid fa-phone"></i>
+        </div>
+      </div>
+      <div class="d-inline-block mx-auto" data-testid="company-phone">
+          @Company.PhoneNumber
+      </div>
+    </div>
+  </div>
+</div>
+
+  @code {
+    [Parameter, EditorRequired]
+    public CompanyDto Company { get; init; } = null!;
+
+  }

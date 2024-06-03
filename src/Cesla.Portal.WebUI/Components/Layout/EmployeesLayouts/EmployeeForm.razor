@@ -1,0 +1,76 @@
+﻿<div class="w-75 border rounded-2 shadow p-3">
+  <EditForm Model="Employee" OnValidSubmit="OnEmployeeFormSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-1 row">
+      <div class="col-md-6">
+        <label for="FirstName" class="form-label fw-semibold">First name</label>
+        <InputText id="FirstName" class="form-control" @bind-Value="@Employee.FirstName" />
+      </div>
+      <div class="col-md-6">
+        <label for="LastName" class="form-label fw-semibold">Last name</label>
+        <InputText id="LastName" class="form-control" @bind-Value="Employee.LastName" />
+      </div>
+    </div>
+    <hr />
+    <div class="mb-1 row">
+      <div class="col-md-6">
+        <label for="DateOfBirth" class="form-label fw-semibold">Date of birth</label>
+        <div class="input-group">
+          <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-calendar-days"></i></span>
+          <InputDate id="DateOfBirth" class="form-control" @bind-Value="Employee.DateOfBirth" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label for="EmailAddress" class="form-label fw-semibold">Email address</label>
+        <div class="input-group">
+          <span class="input-group-text" id="basic-addon1">@@</span>
+          <InputText id="EmailAddress" type="email" class="form-control" @bind-Value="Employee.EmailAddress" />
+        </div>
+      </div>
+    </div>
+    <div class="mb-1 row">
+      <div class="col-md-6">
+        <label for="Department" class="form-label fw-semibold">Department</label>
+        <div class="input-group">
+          <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-building-user"></i></span>
+          <InputText id="Department" class="form-control" @bind-Value="Employee.Department" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label for="JobTitle" class="form-label fw-semibold">Job title</label>
+        <div class="input-group">
+          <span class="input-group-text" id="basic-addon1"><i class="fa-solid fa-user-graduate"></i></span>
+          <InputText id="JobTitle" class="form-control" @bind-Value="Employee.JobTitle" />
+        </div>
+      </div>
+    </div>
+    <hr />
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary" style="width: 80px">Save</button>
+    </div>
+  </EditForm>
+</div>
+@code {
+  [Parameter]
+  public EmployeeFormModel Employee { get; init; } = new();
+
+  [Parameter, EditorRequired]
+  public EventCallback<EmployeeFormSubmittedEventArgs> OnFormSubmitted { get; init; }
+
+  public class EmployeeFormSubmittedEventArgs
+  {
+    public EmployeeFormModel Employee { get; init; }
+
+    public EmployeeFormSubmittedEventArgs(EmployeeFormModel company)
+    {
+      Employee = company;
+    }
+  }
+
+  private async Task OnEmployeeFormSubmit()
+  {
+    await OnFormSubmitted.InvokeAsync(new EmployeeFormSubmittedEventArgs(Employee));
+  }
+}
