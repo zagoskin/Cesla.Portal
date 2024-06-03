@@ -23,35 +23,6 @@ EXPOSE 8081
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+## Run this to generate it: dotnet dev-certs https -ep cert.pfx -p C35l41234!
 COPY ["cert.pfx", "/https/cert.pfx"]
 ENTRYPOINT ["dotnet", "Cesla.Portal.WebUI.dll"]
-
-#FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-#WORKDIR /app
-#COPY . ./
-#RUN dotnet restore "src/Cesla.Portal.WebUI/Cesla.Portal.WebUI.csproj"
-#WORKDIR "src/Cesla.Portal.WebUI"
-#RUN dotnet publish "Cesla.Portal.WebUI.csproj" -c Release -o /app/publish /p:UseAppHost=false
-#
-#FROM nginx:alpine AS final
-#COPY --from=build /app/publish/wwwroot /usr/share/nginx/html
-#COPY ["cert.pfx", "/https/cert.pfx"]
-
-#FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-#WORKDIR /app
-#
-## Copy everything
-#COPY . ./
-## Restore as distinct layers
-#RUN dotnet restore
-## Build and publish a release
-#RUN dotnet publish -c Release -o out
-#
-## Build runtime image
-#FROM mcr.microsoft.com/dotnet/aspnet:8.0
-#WORKDIR /app
-#COPY --from=build /app/out .
-## Run this to generate it: dotnet dev-certs https -ep cert.pfx -p Test1234!
-#COPY ["cert.pfx", "/https/cert.pfx"]
-#ENTRYPOINT ["dotnet", "Customers.WebApp.dll"]
-#
